@@ -1,0 +1,27 @@
+services:
+  catalogdb:
+    container_name: catalogdb
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    restart: always
+    expose:
+      - 5432:5432
+    ports:
+      - 5432:5432
+    volumes:
+      - catalogdb:/var/lib/postgresql/data/
+
+  catalog:
+    container_name: catalogapi
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=${ASPNETCORE_Certificates_Password}
+    restart: always
+    ports:
+      - 5000:5000
+      - 5050:5050
+    volumes:
+      - ../../Secrets/https/:/https/
