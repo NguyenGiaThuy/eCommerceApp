@@ -399,7 +399,8 @@ FodyWeavers.xsd
 *.sln.iml
 
 # Secrets
-secrets/
+Secrets/
 appsettings.json
 appsettings.Development.json
 .env
+*.sh
