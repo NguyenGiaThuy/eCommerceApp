@@ -26,3 +26,4 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "Catalog.API.dll"]
+# CMD ["tail", "-f", "/dev/null"]
