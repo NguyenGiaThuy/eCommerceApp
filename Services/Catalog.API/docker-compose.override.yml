@@ -8,6 +8,8 @@ services:
     restart: always
     expose:
       - 5432:5432
+    ports:
+      - 5432:5432
     volumes:
       - catalogdb:/var/lib/postgresql/data/
 
@@ -19,7 +21,7 @@ services:
       - ASPNETCORE_Kestrel__Certificates__Default__Password=${ASPNETCORE_CERTIFICATES_PASSWORD}
     restart: always
     ports:
-      - 5000:5000
-      - 5050:5050
+      - 6000:5000
+      - 6060:5050
     volumes:
       - ~/.aspnet/https/:/https:ro

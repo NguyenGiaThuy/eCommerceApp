@@ -7,13 +7,13 @@ Internal architecture: Vertical slice
     3. Domain layer
     4. Infrastructure layer
 Design pattern/Principle: CQRS handler
-    1. Command query object
+    1. Command/query object
     2. Result object
     3. Repository object
 */
 
 /// <summary>
-/// Command query object
+/// Command object
 /// </summary>
 /// <param name="Name"></param>
 /// <param name="Categories"></param>
@@ -25,7 +25,8 @@ public record CreateProductRequest(
     List<string> Categories,
     string Description,
     string ImageFile,
-    decimal Price);
+    decimal Price
+);
 
 /// <summary>
 /// Result object
@@ -41,7 +42,7 @@ public class CreateProductEndpoint : ICarterModule
     public void AddRoutes(IEndpointRouteBuilder app)
     {
         app.MapPost("/products",
-            async (CreateProductRequest request, ISender sender) =>
+            async ([FromBody] CreateProductRequest request, ISender sender) =>
         {
             // Pipeline: Request -> Command -> Result -> Response
             CreateProductCommand command = request.Adapt<CreateProductCommand>();

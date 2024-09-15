@@ -1,6 +1,3 @@
-using eCommerceApp.BuildingBlocks.CQRS;
-using eCommerceApp.Catalog.API.Models;
-
 namespace eCommerceApp.Catalog.API.Products.CreateProduct;
 
 /*
@@ -10,13 +7,13 @@ Internal architecture: Vertical slice
     3. Domain layer
     4. Infrastructure layer
 Design pattern/Principle: CQRS handler
-    1. Command query object
+    1. Command/query object
     2. Result object
     3. Repository object
 */
 
 /// <summary>
-/// Command query object
+/// Command object
 /// </summary>
 /// <param name="Name"></param>
 /// <param name="Categories"></param>
@@ -40,11 +37,16 @@ public record CreateProductResult(Guid Id);
 /// <summary>
 /// Repository object
 /// </summary>
-internal class CreateProductCommandHandler(IDocumentSession session)
+/// <param name="session"></param>
+internal class CreateProductHandler
+    (IDocumentSession session, ILogger<CreateProductHandler> logger)
     : ICommandHandler<CreateProductCommand, CreateProductResult>
 {
     public async Task<CreateProductResult> Handle(CreateProductCommand command, CancellationToken cancellationToken)
     {
+        // Log information
+        logger.LogInformation($"CreateProductHandler.Handle called with {command}");
+
         // Create Product entity from command object
         Product product = new Product
         {
