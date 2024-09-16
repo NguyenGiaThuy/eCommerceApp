@@ -32,12 +32,12 @@ public class DeleteProductEndpoint : ICarterModule
     public void AddRoutes(IEndpointRouteBuilder app)
     {
         app.MapDelete("/products/{id}",
-            async ([FromRoute] Guid id, ISender sender) =>
+            async (Guid id, ISender sender) =>
         {
             // Pipeline: Request -> Command -> Result -> Response
-            DeleteProductCommand command = new DeleteProductRequest(id).Adapt<DeleteProductCommand>();
-            DeleteProductResult result = await sender.Send(command);
-            DeleteProductResponse response = result.Adapt<DeleteProductResponse>();
+            var command = new DeleteProductRequest(id).Adapt<DeleteProductCommand>();
+            var result = await sender.Send(command);
+            var response = result.Adapt<DeleteProductResponse>();
             return Results.Ok(response);
         })
         .WithName("DeleteProduct")

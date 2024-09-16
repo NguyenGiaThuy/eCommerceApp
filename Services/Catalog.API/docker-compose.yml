@@ -2,7 +2,7 @@ services:
   catalogdb:
     image: postgres
 
-  catalog:
+  catalogapi:
     build:
       context: ../../
       dockerfile: Services/Catalog.API/Dockerfile
@@ -11,4 +11,4 @@ services:
       - catalogdb
 
 volumes:
-  catalogdb:
+  catalog-db:

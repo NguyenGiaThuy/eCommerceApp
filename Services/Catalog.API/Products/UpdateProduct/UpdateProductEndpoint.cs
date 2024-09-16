@@ -44,12 +44,12 @@ public class UpdateProductEndpoint : ICarterModule
     public void AddRoutes(IEndpointRouteBuilder app)
     {
         app.MapPut("/products",
-            async ([FromBody] UpdateProductRequest request, ISender sender) =>
+            async (UpdateProductRequest request, ISender sender) =>
         {
             // Pipeline: Request -> command -> Result -> Response
-            UpdateProductCommand command = request.Adapt<UpdateProductCommand>();
-            UpdateProductResult result = await sender.Send(command);
-            UpdateProductResponse response = result.Adapt<UpdateProductResponse>();
+            var command = request.Adapt<UpdateProductCommand>();
+            var result = await sender.Send(command);
+            var response = result.Adapt<UpdateProductResponse>();
             return Results.Ok(response);
         })
         .WithName("UpdateProduct")

@@ -42,12 +42,12 @@ public class CreateProductEndpoint : ICarterModule
     public void AddRoutes(IEndpointRouteBuilder app)
     {
         app.MapPost("/products",
-            async ([FromBody] CreateProductRequest request, ISender sender) =>
+            async (CreateProductRequest request, ISender sender) =>
         {
             // Pipeline: Request -> Command -> Result -> Response
-            CreateProductCommand command = request.Adapt<CreateProductCommand>();
-            CreateProductResult result = await sender.Send(command);
-            CreateProductResponse response = result.Adapt<CreateProductResponse>();
+            var command = request.Adapt<CreateProductCommand>();
+            var result = await sender.Send(command);
+            var response = result.Adapt<CreateProductResponse>();
             return Results.Created($"/products/{response.Id}", response);
         })
         .WithName("CreateProduct")

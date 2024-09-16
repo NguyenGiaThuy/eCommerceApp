@@ -38,17 +38,14 @@ public record CreateProductResult(Guid Id);
 /// Repository object
 /// </summary>
 /// <param name="session"></param>
-internal class CreateProductHandler
-    (IDocumentSession session, ILogger<CreateProductHandler> logger)
+internal class CreateProductHandler(IDocumentSession session)
     : ICommandHandler<CreateProductCommand, CreateProductResult>
 {
-    public async Task<CreateProductResult> Handle(CreateProductCommand command, CancellationToken cancellationToken)
+    public async Task<CreateProductResult> Handle(
+        CreateProductCommand command, CancellationToken cancellationToken)
     {
-        // Log information
-        logger.LogInformation($"CreateProductHandler.Handle called with {command}");
-
         // Create Product entity from command object
-        Product product = new Product
+        var product = new Product
         {
             Name = command.Name,
             Categories = command.Categories,
@@ -63,5 +60,31 @@ internal class CreateProductHandler
 
         // Return CreateProductResult result
         return new CreateProductResult(product.Id);
+    }
+}
+
+/// <summary>
+/// Validation object to be handled by MediatR pipeline
+/// </summary>
+public class CreateProductCommandValidator : AbstractValidator<CreateProductCommand>
+{
+    public CreateProductCommandValidator()
+    {
+        RuleFor(x => x.Name)
+        .NotEmpty().WithMessage("Name is required")
+        .Length(2, 100).WithMessage("Name must be between 2 and 100 characters long");
+
+        RuleFor(x => x.Categories)
+        .NotEmpty().WithMessage("Categories are required")
+        .Must(xc => xc.All(c => c.Length >= 2 && c.Length <= 50))
+        .WithMessage("Category must be between 2 and 50 characters long");
+
+        RuleFor(x => x.Description)
+        .NotEmpty().WithMessage("Description is required")
+        .Length(2, 200).WithMessage("Description must be between 2 and 200 characters long");
+
+        RuleFor(x => x.ImageFile).NotEmpty().WithMessage("ImageFile is required");
+
+        RuleFor(x => x.Price).GreaterThan(0).WithMessage("Price must be greater than 0");
     }
 }

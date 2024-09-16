@@ -15,8 +15,9 @@ Design pattern/Principle: CQRS handler
 /// <summary>
 /// Query object
 /// </summary>
-/// <param name="Unit"></param>
-public record GetProductsQuery(Unit Unit) : IQuery<GetProductsResult>;
+/// <param name="PageNumber"></param>
+/// <param name="PageSize"></param>
+public record GetProductsQuery(int? PageNumber = 1, int? PageSize = 10) : IQuery<GetProductsResult>;
 
 /// <summary>
 /// Result object
@@ -29,17 +30,15 @@ public record GetProductsResult(IEnumerable<Product> Products);
 /// </summary>
 /// <param name="session"></param>
 /// <param name="logger"></param>
-internal class GetProductsHandler
-    (IDocumentSession session, ILogger<GetProductsHandler> logger)
+internal class GetProductsHandler(IDocumentSession session)
     : IQueryHandler<GetProductsQuery, GetProductsResult>
 {
-    public async Task<GetProductsResult> Handle(GetProductsQuery query, CancellationToken cancellationToken)
+    public async Task<GetProductsResult> Handle(
+        GetProductsQuery query, CancellationToken cancellationToken)
     {
-        // Log information
-        logger.LogInformation($"GetProductsHandler.Handle called with {query}");
-
         // Get products from database
-        IEnumerable<Product> products = await session.Query<Product>().ToListAsync(cancellationToken);
+        var products = await session.Query<Product>()
+            .ToPagedListAsync(query.PageNumber ?? 1, query.PageSize ?? 10, cancellationToken);
 
         // Return GetProductsResult result
         return new GetProductsResult(products);

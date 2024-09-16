@@ -31,14 +31,13 @@ public class GetProductsByCategoryEndpoint : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapGet("/products/category/{category}", async ([FromRoute] string category, ISender sender) =>
+        app.MapGet("/products/category/{category}",
+            async (string category, ISender sender) =>
         {
             // Pipeline: Request -> Query -> Result -> Response
-            GetProductsByCategoryQuery query =
-                new GetProductsByCategoryRequest(category)
-                .Adapt<GetProductsByCategoryQuery>();
-            GetProductsByCategoryResult result = await sender.Send(query);
-            GetProductsByCategoryResponse response = result.Adapt<GetProductsByCategoryResponse>();
+            var query = new GetProductsByCategoryRequest(category).Adapt<GetProductsByCategoryQuery>();
+            var result = await sender.Send(query);
+            var response = result.Adapt<GetProductsByCategoryResponse>();
             return Results.Ok(response);
         })
         .WithName("GetProductsByCategory")

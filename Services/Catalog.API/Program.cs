@@ -1,27 +1,41 @@
 var builder = WebApplication.CreateBuilder(args);
 
-string environment = builder.Environment.EnvironmentName;
+// Configuration
+var environment = builder.Environment.EnvironmentName;
 builder.Configuration
     .AddJsonFile($"appsettings.{environment}.json", optional: true, reloadOnChange: true)
     .AddEnvironmentVariables();
 
 // Add services to container
-builder.Services.AddCarter();
+var assembly = typeof(Program).Assembly;
 
 builder.Services.AddMediatR(config =>
 {
-    // config to add all associated handlers to container
-    config.RegisterServicesFromAssembly(typeof(Program).Assembly);
+    // configurate to add all associated handlers to container
+    config.RegisterServicesFromAssembly(assembly);
+
+    // Configurate to add validation behaviour to the pipeline
+    config.AddOpenBehavior(typeof(ValidationBehaviour<,>));
+
+    // Configure to add logging behaviour to the pipeline
+    config.AddOpenBehavior(typeof(LoggingBehaviour<,>));
 });
 
-builder.Services.AddMarten(config =>
+builder.Services.AddMarten(options =>
 {
-    config.Connection(builder.Configuration.GetConnectionString("Database")!);
+    options.Connection(builder.Configuration.GetConnectionString("Database")!);
 }).UseLightweightSessions();
+if (builder.Environment.IsDevelopment())
+    builder.Services.InitializeMartenWith<CatalogInitialData>();
+
+builder.Services.AddExceptionHandler<CustomExceptionHandler>();
+builder.Services.AddValidatorsFromAssembly(assembly);
+builder.Services.AddCarter();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline
 app.MapCarter();
+app.UseExceptionHandler(options => { });
 
 app.Run();

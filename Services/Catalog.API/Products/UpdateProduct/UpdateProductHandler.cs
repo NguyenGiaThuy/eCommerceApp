@@ -41,19 +41,15 @@ public record UpdateProductResult(bool IsSuccess);
 /// </summary>
 /// <param name="session"></param>
 /// <param name="logger"></param>
-internal class UpdateProductHandler
-    (IDocumentSession session, ILogger<UpdateProductHandler> logger)
+internal class UpdateProductHandler(IDocumentSession session)
     : ICommandHandler<UpdateProductCommand, UpdateProductResult>
 {
     public async Task<UpdateProductResult> Handle(
         UpdateProductCommand command, CancellationToken cancellationToken)
     {
-        // Log information
-        logger.LogInformation($"UpdateProductHandler.Handle called with {command}");
-
         // Get product by id from database
-        Product product = await session.LoadAsync<Product>(command.Id, cancellationToken);
-        if (product == null) throw new ProductNotFoundException();
+        var product = await session.LoadAsync<Product>(command.Id, cancellationToken);
+        if (product == null) throw new ProductNotFoundException(command.Id);
 
         // Update product
         product.Name = command.Name;
@@ -66,5 +62,33 @@ internal class UpdateProductHandler
 
         // Return UpdateProductResult result
         return new UpdateProductResult(true);
+    }
+}
+
+/// <summary>
+/// Validation object to be handled by MediatR pipeline
+/// </summary>
+public class UpdateProductCommandValidator : AbstractValidator<UpdateProductCommand>
+{
+    public UpdateProductCommandValidator()
+    {
+        RuleFor(x => x.Id).NotEmpty().WithMessage("Id is required");
+
+        RuleFor(x => x.Name)
+        .NotEmpty().WithMessage("Name is required")
+        .Length(2, 100).WithMessage("Name must be between 2 and 100 characters long");
+
+        RuleFor(x => x.Categories)
+        .NotEmpty().WithMessage("Categories are required")
+        .Must(xc => xc.All(c => c.Length >= 2 && c.Length <= 50))
+        .WithMessage("Category must be between 2 and 50 characters long");
+
+        RuleFor(x => x.Description)
+        .NotEmpty().WithMessage("Description is required")
+        .Length(2, 200).WithMessage("Description must be between 2 and 200 characters long");
+
+        RuleFor(x => x.ImageFile).NotEmpty().WithMessage("ImageFile is required");
+
+        RuleFor(x => x.Price).GreaterThan(0).WithMessage("Price must be greater than 0");
     }
 }

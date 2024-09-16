@@ -29,20 +29,28 @@ public record GetProductByIdResult(Product Product);
 /// </summary>
 /// <param name="session"></param>
 /// <param name="logger"></param>
-internal class GetProductByIdHandler
-    (IDocumentSession session, ILogger<GetProductByIdHandler> logger)
+internal class GetProductByIdHandler(IDocumentSession session)
     : IQueryHandler<GetProductByIdQuery, GetProductByIdResult>
 {
-    public async Task<GetProductByIdResult> Handle(GetProductByIdQuery query, CancellationToken cancellationToken)
+    public async Task<GetProductByIdResult> Handle(
+        GetProductByIdQuery query, CancellationToken cancellationToken)
     {
-        // Log information
-        logger.LogInformation($"GetProductByIdHandler.Handle called with {query}");
-
         // Get product by id from database
-        Product product = await session.LoadAsync<Product>(query.Id, cancellationToken);
-        if (product == null) throw new ProductNotFoundException();
+        var product = await session.LoadAsync<Product>(query.Id, cancellationToken);
+        if (product == null) throw new ProductNotFoundException(query.Id);
 
         // Return GetProductByIdResult result
         return new GetProductByIdResult(product);
+    }
+}
+
+/// <summary>
+/// Validation object to be handled by MediatR pipeline
+/// </summary>
+public class GetProductByIdQueryValidator : AbstractValidator<GetProductByIdQuery>
+{
+    public GetProductByIdQueryValidator()
+    {
+        RuleFor(x => x.Id).NotEmpty().WithMessage("Id is required");
     }
 }

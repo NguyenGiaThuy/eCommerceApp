@@ -32,12 +32,12 @@ public class GetProductByIdEndpoint : ICarterModule
     public void AddRoutes(IEndpointRouteBuilder app)
     {
         app.MapGet("/products/{id}",
-            async ([FromRoute] Guid id, ISender sender) =>
+            async (Guid id, ISender sender) =>
         {
             // Pipeline: Request -> Query -> Result -> Response
-            GetProductByIdQuery query = new GetProductByIdRequest(id).Adapt<GetProductByIdQuery>();
-            GetProductByIdResult result = await sender.Send(query);
-            GetProductByIdResponse response = result.Adapt<GetProductByIdResponse>();
+            var query = new GetProductByIdRequest(id).Adapt<GetProductByIdQuery>();
+            var result = await sender.Send(query);
+            var response = result.Adapt<GetProductByIdResponse>();
             return Results.Ok(response);
         })
         .WithName("GetProductById")

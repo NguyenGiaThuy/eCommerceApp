@@ -29,22 +29,32 @@ public record GetProductsByCategoryResult(IEnumerable<Product> Products);
 /// </summary>
 /// <param name="session"></param>
 /// <param name="logger"></param>
-internal class GetProductsByCategoryHandler
-    (IDocumentSession session, ILogger<GetProductsByCategoryHandler> logger)
+internal class GetProductsByCategoryHandler(IDocumentSession session)
     : IQueryHandler<GetProductsByCategoryQuery, GetProductsByCategoryResult>
 {
     public async Task<GetProductsByCategoryResult> Handle(
         GetProductsByCategoryQuery query, CancellationToken cancellationToken)
     {
-        // Log information
-        logger.LogInformation($"GetProductsByCategoryHandler.Handle called with {query}");
-
         // Get products from database by category
-        IEnumerable<Product> products = await session.Query<Product>()
+        var products = await session
+            .Query<Product>()
             .Where(p => p.Categories.Contains(query.Category))
             .ToListAsync(cancellationToken);
 
         // Return GetProductsByCategoryResult result
         return new GetProductsByCategoryResult(products);
+    }
+}
+
+/// <summary>
+/// Validation object to be handled by MediatR pipeline
+/// </summary>
+public class GetProductsByCategoryQueryValidator : AbstractValidator<GetProductsByCategoryQuery>
+{
+    public GetProductsByCategoryQueryValidator()
+    {
+        RuleFor(x => x.Category)
+        .NotEmpty().WithMessage("Category is required")
+        .Length(2, 50).WithMessage("Category must be between 2 and 50 characters long");
     }
 }
