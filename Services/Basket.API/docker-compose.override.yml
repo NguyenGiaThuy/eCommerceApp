@@ -1,8 +1,8 @@
 services:
-  catalogdb:
-    container_name: catalogdb
+  basketdb:
+    container_name: basketdb
     environment:
-      - POSTGRES_DB=catalogdb
+      - POSTGRES_DB=basketdb
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     restart: always
@@ -11,17 +11,29 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - catalog-db:/var/lib/postgresql/data/
+      - basket-db:/var/lib/postgresql/data/
 
-  catalogapi:
-    container_name: catalogapi
+  basketcache:
+    container_name: basketcache
+    environment:
+      - REDIS_ARGS=--requirepass ${REDIS_PASSWORD}
+    restart: always
+    expose:
+      - 6379:6379
+    ports:
+      - 6379:6379
+    volumes:
+      - basket-cache:/data/
+
+  basketapi:
+    container_name: basketapi
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
       - ASPNETCORE_Kestrel__Certificates__Default__Password=${ASPNETCORE_CERTIFICATES_PASSWORD}
     restart: always
     ports:
-      - 6000:8080
-      - 6060:8081
+      - 6001:8080
+      - 6061:8081
     volumes:
       - ~/.aspnet/https/:/https:ro

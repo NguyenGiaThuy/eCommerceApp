@@ -16,7 +16,8 @@ Design pattern/Principle: CQRS handler
 /// Query object
 /// </summary>
 /// <param name="Category"></param>
-public record GetProductsByCategoryQuery(string Category) : IQuery<GetProductsByCategoryResult>;
+public record GetProductsByCategoryQuery(string Category, int? PageNumber = 1, int? PageSize = 10)
+    : IQuery<GetProductsByCategoryResult>;
 
 /// <summary>
 /// Result object
@@ -28,18 +29,21 @@ public record GetProductsByCategoryResult(IEnumerable<Product> Products);
 /// Repository object
 /// </summary>
 /// <param name="session"></param>
-/// <param name="logger"></param>
 internal class GetProductsByCategoryHandler(IDocumentSession session)
     : IQueryHandler<GetProductsByCategoryQuery, GetProductsByCategoryResult>
 {
     public async Task<GetProductsByCategoryResult> Handle(
         GetProductsByCategoryQuery query, CancellationToken cancellationToken)
     {
-        // Get products from database by category
+        // // Get products from database by category
+        // var products = await session
+        //     .Query<Product>()
+        //     .Where(p => p.Categories.Contains(query.Category))
+        //     .ToListAsync(cancellationToken);
         var products = await session
             .Query<Product>()
             .Where(p => p.Categories.Contains(query.Category))
-            .ToListAsync(cancellationToken);
+            .ToPagedListAsync(query.PageNumber ?? 1, query.PageSize ?? 10, cancellationToken);
 
         // Return GetProductsByCategoryResult result
         return new GetProductsByCategoryResult(products);

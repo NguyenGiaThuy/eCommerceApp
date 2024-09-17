@@ -28,7 +28,6 @@ public record GetProductByIdResult(Product Product);
 /// Repository object
 /// </summary>
 /// <param name="session"></param>
-/// <param name="logger"></param>
 internal class GetProductByIdHandler(IDocumentSession session)
     : IQueryHandler<GetProductByIdQuery, GetProductByIdResult>
 {

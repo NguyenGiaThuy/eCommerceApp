@@ -44,8 +44,8 @@ public class CustomExceptionHandler
         var problemDetails = new ProblemDetails
         {
             Title = exception.GetType().Name,
-            Detail = exception.Message,
             Status = context.Response.StatusCode,
+            Detail = exception.Message,
             Instance = context.Request.Path
         };
 
@@ -57,7 +57,7 @@ public class CustomExceptionHandler
             problemDetails.Extensions.Add("ValidationErrors", validationException.Errors);
         }
 
-        await context.Response.WriteAsJsonAsync(problemDetails, cancellationToken: cancellationToken);
+        await context.Response.WriteAsJsonAsync(problemDetails, cancellationToken);
         return true;
     }
 }

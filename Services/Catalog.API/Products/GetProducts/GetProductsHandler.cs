@@ -29,7 +29,6 @@ public record GetProductsResult(IEnumerable<Product> Products);
 /// Repository object
 /// </summary>
 /// <param name="session"></param>
-/// <param name="logger"></param>
 internal class GetProductsHandler(IDocumentSession session)
     : IQueryHandler<GetProductsQuery, GetProductsResult>
 {
@@ -37,7 +36,8 @@ internal class GetProductsHandler(IDocumentSession session)
         GetProductsQuery query, CancellationToken cancellationToken)
     {
         // Get products from database
-        var products = await session.Query<Product>()
+        var products = await session
+            .Query<Product>()
             .ToPagedListAsync(query.PageNumber ?? 1, query.PageSize ?? 10, cancellationToken);
 
         // Return GetProductsResult result

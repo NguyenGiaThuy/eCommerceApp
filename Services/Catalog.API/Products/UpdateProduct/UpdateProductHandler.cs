@@ -40,7 +40,6 @@ public record UpdateProductResult(bool IsSuccess);
 /// Repository object
 /// </summary>
 /// <param name="session"></param>
-/// <param name="logger"></param>
 internal class UpdateProductHandler(IDocumentSession session)
     : ICommandHandler<UpdateProductCommand, UpdateProductResult>
 {
