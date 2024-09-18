@@ -15,8 +15,10 @@ Design pattern/Principle: CQRS handler
 /// <summary>
 /// Query object
 /// </summary>
-/// <param name="Category"></param>
-public record GetProductsByCategoryRequest(string Category, int? PageNumber = 1, int? PageSize = 10);
+/// <param name="Id"></param>
+/// <param name="PageNumber"></param>
+/// <param name="PageSize"></param>
+public record GetProductsByCategoryRequest(Guid Id, int? PageNumber = 1, int? PageSize = 10);
 
 /// <summary>
 /// Result object
@@ -31,8 +33,8 @@ public class GetProductsByCategoryEndpoint : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapGet("/products/category",
-            async ([AsParameters] GetProductsByCategoryRequest request, ISender sender) =>
+        app.MapGet("/products/category/{id}",
+            async (Guid id, [AsParameters] GetProductsByCategoryRequest request, ISender sender) =>
         {
             // Pipeline: Request -> Query -> Result -> Response
             var query = request.Adapt<GetProductsByCategoryQuery>();

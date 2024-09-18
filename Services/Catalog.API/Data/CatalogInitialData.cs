@@ -9,17 +9,32 @@ public class CatalogInitialData : IInitialData
 
         if (await session.Query<Product>().AnyAsync(cancellationToken)) return;
 
-        session.Store(GetPreconfiguredProducts(100));
+        var (products, ProductCategories) = GetPreconfiguredProducts(100);
+        session.Store(products);
+        session.Store(ProductCategories);
         await session.SaveChangesAsync(cancellationToken);
     }
 
-    private static IEnumerable<Product> GetPreconfiguredProducts(int productsCount)
+    private static (IEnumerable<Product>, IEnumerable<ProductCategory>) GetPreconfiguredProducts(int productsCount)
     {
         var random = new Random();
         var names = new[] { "Iphone X", "Samsung S21", "Google Pixel 5", "OnePlus 9", "Xiaomi Mi 11" };
-        var categories = new[] { "Smart Phone", "Camera", "Electronics", "Mobile Device" };
+        Dictionary<Guid, string> categoryNames = new Dictionary<Guid, string>() {
+            { Guid.NewGuid(), "Smart Phone" },
+            { Guid.NewGuid(), "Camera" },
+            { Guid.NewGuid(), "Electronics" },
+            { Guid.NewGuid(), "Mobile Device" },
+        };
+        var categories = categoryNames
+            .Select(kvp => new ProductCategory
+            {
+                Id = kvp.Key,
+                Name = kvp.Value
+            }).ToList();
 
         var products = new List<Product>();
+
+
         for (int i = 0; i < productsCount; i++)
         {
             var product = new Product()
@@ -29,17 +44,17 @@ public class CatalogInitialData : IInitialData
                 Description = "This phone is the company's biggest change to its flagship smartphone in years.",
                 ImageFile = $"product-{i + 1}.png",
                 Price = (decimal)Math.Round(random.NextDouble() * (999.99 - 299.99) + 299.99, 2),
-                Categories = new List<string>()
+                CategoryIds = new List<Guid>()
             };
 
-            var categoriesCount = random.Next(1, categories.Length);
+            var categoriesCount = random.Next(1, categoryNames.Count);
             int j = 0;
             while (j < categoriesCount)
             {
-                var category = categories[random.Next(categories.Length)];
-                if (!product.Categories.Contains(category))
+                var id = categoryNames.ToList()[random.Next(categoryNames.Count)].Key;
+                if (!product.CategoryIds.Contains(id))
                 {
-                    product.Categories.Add(category);
+                    product.CategoryIds.Add(id);
                     j++;
                 }
             }
@@ -47,6 +62,6 @@ public class CatalogInitialData : IInitialData
             products.Add(product);
         }
 
-        return products;
+        return (products, categories);
     }
 }

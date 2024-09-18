@@ -15,8 +15,10 @@ Design pattern/Principle: CQRS handler
 /// <summary>
 /// Query object
 /// </summary>
-/// <param name="Category"></param>
-public record GetProductsByCategoryQuery(string Category, int? PageNumber = 1, int? PageSize = 10)
+/// <param name="Id"></param>
+/// <param name="PageNumber"></param>
+/// <param name="PageSize"></param>
+public record GetProductsByCategoryQuery(Guid Id, int? PageNumber = 1, int? PageSize = 10)
     : IQuery<GetProductsByCategoryResult>;
 
 /// <summary>
@@ -35,14 +37,9 @@ internal class GetProductsByCategoryHandler(IDocumentSession session)
     public async Task<GetProductsByCategoryResult> Handle(
         GetProductsByCategoryQuery query, CancellationToken cancellationToken)
     {
-        // // Get products from database by category
-        // var products = await session
-        //     .Query<Product>()
-        //     .Where(p => p.Categories.Contains(query.Category))
-        //     .ToListAsync(cancellationToken);
         var products = await session
             .Query<Product>()
-            .Where(p => p.Categories.Contains(query.Category))
+            .Where(p => p.CategoryIds.Contains(query.Id))
             .ToPagedListAsync(query.PageNumber ?? 1, query.PageSize ?? 10, cancellationToken);
 
         // Return GetProductsByCategoryResult result
@@ -57,8 +54,6 @@ public class GetProductsByCategoryQueryValidator : AbstractValidator<GetProducts
 {
     public GetProductsByCategoryQueryValidator()
     {
-        RuleFor(x => x.Category)
-        .NotEmpty().WithMessage("Category is required")
-        .Length(2, 50).WithMessage("Category must be between 2 and 50 characters long");
+        RuleFor(x => x.Id).NotEmpty().WithMessage("Id is required");
     }
 }

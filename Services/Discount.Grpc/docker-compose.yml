@@ -1,0 +1,6 @@
+services:
+  discountgrpc:
+    build:
+      context: ../../
+      dockerfile: Services/Discount.Grpc/Dockerfile
+    image: discount-grpc

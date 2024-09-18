@@ -17,14 +17,14 @@ Design pattern/Principle: CQRS handler
 /// </summary>
 /// <param name="Id"></param>
 /// <param name="Name"></param>
-/// <param name="Categories"></param>
+/// <param name="CategoryIds"></param>
 /// <param name="Description"></param>
 /// <param name="ImageFile"></param>
 /// <param name="Price"></param>
 public record UpdateProductCommand(
     Guid Id,
     string Name,
-    List<string> Categories,
+    List<Guid> CategoryIds,
     string Description,
     string ImageFile,
     decimal Price)
@@ -52,7 +52,7 @@ internal class UpdateProductHandler(IDocumentSession session)
 
         // Update product
         product.Name = command.Name;
-        product.Categories = command.Categories;
+        product.CategoryIds = command.CategoryIds;
         product.Description = command.Description;
         product.ImageFile = command.ImageFile;
         product.Price = command.Price;
@@ -77,10 +77,7 @@ public class UpdateProductCommandValidator : AbstractValidator<UpdateProductComm
         .NotEmpty().WithMessage("Name is required")
         .Length(2, 100).WithMessage("Name must be between 2 and 100 characters long");
 
-        RuleFor(x => x.Categories)
-        .NotEmpty().WithMessage("Categories are required")
-        .Must(xc => xc.All(c => c.Length >= 2 && c.Length <= 50))
-        .WithMessage("Category must be between 2 and 50 characters long");
+        RuleFor(x => x.CategoryIds).NotEmpty().WithMessage("Categories are required");
 
         RuleFor(x => x.Description)
         .NotEmpty().WithMessage("Description is required")

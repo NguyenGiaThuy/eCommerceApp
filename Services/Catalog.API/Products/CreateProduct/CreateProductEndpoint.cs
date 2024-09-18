@@ -16,13 +16,13 @@ Design pattern/Principle: CQRS handler
 /// Command object
 /// </summary>
 /// <param name="Name"></param>
-/// <param name="Categories"></param>
+/// <param name="CategoryIds"></param>
 /// <param name="Description"></param>
 /// <param name="ImageFile"></param>
 /// <param name="Price"></param>
 public record CreateProductRequest(
     string Name,
-    List<string> Categories,
+    List<Guid> CategoryIds,
     string Description,
     string ImageFile,
     decimal Price
