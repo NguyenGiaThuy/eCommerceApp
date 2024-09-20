@@ -25,6 +25,7 @@ builder.Services.AddMarten(options =>
 {
     options.Connection(builder.Configuration.GetConnectionString("Database")!);
     options.Schema.For<ShoppingCart>().Identity(x => x.Username);
+    options.Schema.For<ShoppingCartItem>().Identity(x => x.ProductId);
 }).UseLightweightSessions();
 if (builder.Environment.IsDevelopment())
     builder.Services.InitializeMartenWith<BasketInitialData>();

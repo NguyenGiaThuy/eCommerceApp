@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Http.Features;
+
 namespace eCommerceApp.Basket.API.Basket.CreateBasket;
 
 /*
@@ -52,5 +54,20 @@ public class CreateBasketCommandValidator : AbstractValidator<CreateBasketComman
         RuleFor(x => x.Cart).NotEmpty().WithMessage("Cart cannot be null");
 
         RuleFor(x => x.Cart.Username).NotEmpty().WithMessage("Username is required");
+
+        RuleForEach(x => x.Cart.Items).ChildRules(item =>
+        {
+            item.RuleFor(x => x.ProductId).NotEmpty().WithMessage("All item ids are required");
+
+            item.RuleFor(x => x.ProductName).NotEmpty().WithMessage("All item names are required")
+            .Length(2, 100).WithMessage("All item names must be between 2 and 100 characters long");
+
+            item.RuleFor(x => x.Color).NotEmpty().WithMessage("All item colors are required")
+            .Length(2, 30).WithMessage("All item colors must be between 2 and 30 characters long");
+
+            item.RuleFor(x => x.Price).GreaterThan(0).WithMessage("All item prices must be greater than 0");
+
+            item.RuleFor(x => x.Quantity).GreaterThan(0).WithMessage("All item quantities must be greater than 0");
+        });
     }
 }

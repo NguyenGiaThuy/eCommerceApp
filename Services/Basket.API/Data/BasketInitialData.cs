@@ -9,11 +9,11 @@ public class BasketInitialData : IInitialData
 
         if (await session.Query<ShoppingCart>().AnyAsync(cancellationToken)) return;
 
-        session.Store(GetPreconfiguredProducts(10));
+        session.Store(GetPreconfiguredData(10));
         await session.SaveChangesAsync(cancellationToken);
     }
 
-    private static IEnumerable<ShoppingCart> GetPreconfiguredProducts(int shoppingCartsCount)
+    private static IEnumerable<ShoppingCart> GetPreconfiguredData(int shoppingCartsCount)
     {
         var random = new Random();
         var usernames = new[] { "binh", "kiet", "thinh", "thuy" };
@@ -23,7 +23,7 @@ public class BasketInitialData : IInitialData
         var shoppingCarts = new List<ShoppingCart>();
         for (int i = 0; i < shoppingCartsCount; i++)
         {
-            var shoppingCart = new ShoppingCart()
+            var shoppingCart = new ShoppingCart
             {
                 Username = usernames[random.Next(usernames.Length)],
                 Items = new List<ShoppingCartItem>()
@@ -34,11 +34,11 @@ public class BasketInitialData : IInitialData
             {
                 var item = new ShoppingCartItem
                 {
+                    ProductId = Guid.NewGuid(),
+                    ProductName = productNames[random.Next(productNames.Length)],
                     Quantity = random.Next(1, 4),
                     Color = colors[random.Next(colors.Length)],
-                    Price = (decimal)Math.Round(random.NextDouble() * (999.99 - 299.99) + 299.99, 2),
-                    ProductId = Guid.NewGuid(),
-                    ProductName = productNames[random.Next(productNames.Length)]
+                    Price = (decimal)Math.Round(random.NextDouble() * (999.99 - 299.99) + 299.99, 2)
                 };
 
                 shoppingCart.Items.Add(item);

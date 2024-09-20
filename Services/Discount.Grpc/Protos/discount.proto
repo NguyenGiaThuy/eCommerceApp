@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+option csharp_namespace = "eCommerceApp.Discount.Grpc";
+
+package discount;
+
+service Discount
+{
+    rpc GetDiscount (GetDiscountRequest) returns (GetDiscountResponse);
+    rpc CreateDiscount (CreateDiscountRequest) returns (CreateDiscountResponse);
+    rpc UpdateDiscount (UpdateDiscountRequest) returns (UpdateDiscountResponse);
+    rpc DeleteDiscount (DeleteDiscountRequest) returns (DeleteDiscountResponse);
+}
+
+message CouponModel 
+{
+    string productId = 1;
+    string productName = 2;
+    string description = 3;
+    float amount = 4;
+}
+
+message GetDiscountRequest
+{
+    string productId = 1;
+}
+
+message GetDiscountResponse
+{
+    CouponModel coupon = 1;
+}
+
+message CreateDiscountRequest
+{
+    CouponModel coupon = 1;
+}
+
+message CreateDiscountResponse
+{
+    string productId = 1;
+}
+
+message UpdateDiscountRequest
+{
+    CouponModel coupon = 1;
+}
+
+message UpdateDiscountResponse
+{
+    string productId = 1;
+}
+
+message DeleteDiscountRequest
+{
+    string productId = 1;
+}
+
+message DeleteDiscountResponse
+{
+    bool isSuccess = 1;
+}

@@ -1,4 +1,4 @@
-namespace eCommerceApp.Catalog.API.Products.GetProductsByCategory;
+namespace eCommerceApp.Catalog.API.Products.GetProductsByCategoryId;
 
 /*
 Internal architecture: Vertical slice
@@ -18,41 +18,41 @@ Design pattern/Principle: CQRS handler
 /// <param name="Id"></param>
 /// <param name="PageNumber"></param>
 /// <param name="PageSize"></param>
-public record GetProductsByCategoryQuery(Guid Id, int? PageNumber = 1, int? PageSize = 10)
-    : IQuery<GetProductsByCategoryResult>;
+public record GetProductsByCategoryIdQuery(Guid Id, int? PageNumber = 1, int? PageSize = 10)
+    : IQuery<GetProductsByCategoryIdResult>;
 
 /// <summary>
 /// Result object
 /// </summary>
 /// <param name="Products"></param>
-public record GetProductsByCategoryResult(IEnumerable<Product> Products);
+public record GetProductsByCategoryIdResult(IEnumerable<Product> Products);
 
 /// <summary>
 /// Repository object
 /// </summary>
 /// <param name="session"></param>
-internal class GetProductsByCategoryHandler(IDocumentSession session)
-    : IQueryHandler<GetProductsByCategoryQuery, GetProductsByCategoryResult>
+internal class GetProductsByCategoryIdHandler(IDocumentSession session)
+    : IQueryHandler<GetProductsByCategoryIdQuery, GetProductsByCategoryIdResult>
 {
-    public async Task<GetProductsByCategoryResult> Handle(
-        GetProductsByCategoryQuery query, CancellationToken cancellationToken)
+    public async Task<GetProductsByCategoryIdResult> Handle(
+        GetProductsByCategoryIdQuery query, CancellationToken cancellationToken)
     {
         var products = await session
             .Query<Product>()
             .Where(p => p.CategoryIds.Contains(query.Id))
             .ToPagedListAsync(query.PageNumber ?? 1, query.PageSize ?? 10, cancellationToken);
 
-        // Return GetProductsByCategoryResult result
-        return new GetProductsByCategoryResult(products);
+        // Return GetProductsByCategoryIdResult result
+        return new GetProductsByCategoryIdResult(products);
     }
 }
 
 /// <summary>
 /// Validation object to be handled by MediatR pipeline
 /// </summary>
-public class GetProductsByCategoryQueryValidator : AbstractValidator<GetProductsByCategoryQuery>
+public class GetProductsByCategoryIdQueryValidator : AbstractValidator<GetProductsByCategoryIdQuery>
 {
-    public GetProductsByCategoryQueryValidator()
+    public GetProductsByCategoryIdQueryValidator()
     {
         RuleFor(x => x.Id).NotEmpty().WithMessage("Id is required");
     }

@@ -24,6 +24,7 @@ builder.Services.AddMediatR(config =>
 builder.Services.AddMarten(options =>
 {
     options.Connection(builder.Configuration.GetConnectionString("Database")!);
+    options.Schema.For<Product>().Index(x => x.CategoryIds.Select(categoryId => categoryId));
 }).UseLightweightSessions();
 if (builder.Environment.IsDevelopment())
     builder.Services.InitializeMartenWith<CatalogInitialData>();

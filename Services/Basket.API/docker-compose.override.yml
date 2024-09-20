@@ -6,10 +6,8 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     restart: always
-    expose:
-      - 5432:5432
     ports:
-      - 5432:5432
+      - 5431:5432
     volumes:
       - basket-db:/var/lib/postgresql/data/
 
@@ -18,22 +16,7 @@ services:
     environment:
       - REDIS_ARGS=--requirepass ${REDIS_PASSWORD}
     restart: always
-    expose:
-      - 6379:6379
     ports:
       - 6379:6379
     volumes:
       - basket-cache:/data/
-
-  basketapi:
-    container_name: basketapi
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
-      - ASPNETCORE_Kestrel__Certificates__Default__Password=${ASPNETCORE_CERTIFICATES_PASSWORD}
-    restart: always
-    ports:
-      - 6001:8080
-      - 6061:8081
-    volumes:
-      - ~/.aspnet/https/:/https:ro

@@ -9,23 +9,24 @@ public class CatalogInitialData : IInitialData
 
         if (await session.Query<Product>().AnyAsync(cancellationToken)) return;
 
-        var (products, ProductCategories) = GetPreconfiguredProducts(100);
+        var (products, ProductCategories) = GetPreconfiguredData(100);
         session.Store(products);
         session.Store(ProductCategories);
         await session.SaveChangesAsync(cancellationToken);
     }
 
-    private static (IEnumerable<Product>, IEnumerable<ProductCategory>) GetPreconfiguredProducts(int productsCount)
+    private static (IEnumerable<Product>, IEnumerable<ProductCategory>) GetPreconfiguredData(int productsCount)
     {
         var random = new Random();
         var names = new[] { "Iphone X", "Samsung S21", "Google Pixel 5", "OnePlus 9", "Xiaomi Mi 11" };
-        Dictionary<Guid, string> categoryNames = new Dictionary<Guid, string>() {
+        var categoryDict = new Dictionary<Guid, string>
+        {
             { Guid.NewGuid(), "Smart Phone" },
             { Guid.NewGuid(), "Camera" },
             { Guid.NewGuid(), "Electronics" },
             { Guid.NewGuid(), "Mobile Device" },
         };
-        var categories = categoryNames
+        var categories = categoryDict
             .Select(kvp => new ProductCategory
             {
                 Id = kvp.Key,
@@ -37,7 +38,7 @@ public class CatalogInitialData : IInitialData
 
         for (int i = 0; i < productsCount; i++)
         {
-            var product = new Product()
+            var product = new Product
             {
                 Id = Guid.NewGuid(),
                 Name = names[random.Next(names.Length)],
@@ -47,14 +48,14 @@ public class CatalogInitialData : IInitialData
                 CategoryIds = new List<Guid>()
             };
 
-            var categoriesCount = random.Next(1, categoryNames.Count);
+            var categoriesCount = random.Next(1, categoryDict.Count);
             int j = 0;
             while (j < categoriesCount)
             {
-                var id = categoryNames.ToList()[random.Next(categoryNames.Count)].Key;
-                if (!product.CategoryIds.Contains(id))
+                var categoryId = categoryDict.ToList()[random.Next(categoryDict.Count)].Key;
+                if (!product.CategoryIds.Contains(categoryId))
                 {
-                    product.CategoryIds.Add(id);
+                    product.CategoryIds.Add(categoryId);
                     j++;
                 }
             }

@@ -5,15 +5,6 @@ services:
   basketcache:
     image: redis
 
-  basketapi:
-    build:
-      context: ../../
-      dockerfile: Services/Basket.API/Dockerfile
-    image: basket-api
-    depends_on:
-      - basketdb
-      - basketcache
-
 volumes:
   basket-db:
   basket-cache:
