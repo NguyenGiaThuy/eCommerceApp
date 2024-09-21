@@ -1,5 +1,3 @@
-using System.Text;
-
 namespace eCommerceApp.Discount.Grpc.Services;
 
 public class DiscountService

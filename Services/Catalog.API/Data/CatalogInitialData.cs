@@ -1,6 +1,4 @@
 
-using Marten.Linq.SoftDeletes;
-
 namespace eCommerceApp.Catalog.API.Data;
 
 public class CatalogInitialData : IInitialData

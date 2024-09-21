@@ -41,15 +41,16 @@ builder.Services.AddGrpcClient<DiscountProtoService.DiscountProtoServiceClient>(
 })
 .ConfigurePrimaryHttpMessageHandler(() =>
 {
-    var handler = new HttpClientHandler
+    var handler = new HttpClientHandler();
+
+    if (builder.Environment.IsDevelopment()) handler = new HttpClientHandler
     {
         ServerCertificateCustomValidationCallback =
-        HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+            HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
     };
 
     return handler;
 });
-
 
 builder.Services.AddHealthChecks()
                 .AddNpgSql(builder.Configuration.GetConnectionString("Database")!)

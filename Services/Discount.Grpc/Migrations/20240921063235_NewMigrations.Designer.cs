@@ -11,7 +11,7 @@ using eCommerceApp.DiscountGrpc.Data;
 namespace Discount.Grpc.Migrations
 {
     [DbContext(typeof(DiscountContext))]
-    [Migration("20240921054710_NewMigrations")]
+    [Migration("20240921063235_NewMigrations")]
     partial class NewMigrations
     {
         /// <inheritdoc />
@@ -47,7 +47,7 @@ namespace Discount.Grpc.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("cbe76cae-257b-4514-be3c-520d78ea3312"),
+                            Id = new Guid("fe579b97-9006-4bde-82f5-c5676e20d6ea"),
                             Amount = 50m,
                             Description = "Iphone discount",
                             ProductId = new Guid("16676e61-9c66-4f5d-9ba2-a775b6d326d1"),
@@ -55,7 +55,7 @@ namespace Discount.Grpc.Migrations
                         },
                         new
                         {
-                            Id = new Guid("74ad172c-7a58-482a-906f-29fcd09eac69"),
+                            Id = new Guid("05da7b19-44ff-4441-8097-1f75cc4475df"),
                             Amount = 100m,
                             Description = "Samsung discount",
                             ProductId = new Guid("c63d2f83-f353-42e1-a07f-8be599379a32"),
@@ -63,7 +63,7 @@ namespace Discount.Grpc.Migrations
                         },
                         new
                         {
-                            Id = new Guid("b95e4e46-568a-436c-8ad0-0f753e44bbea"),
+                            Id = new Guid("f2e3b9ec-1030-4de0-a76f-e93f01782749"),
                             Amount = 70m,
                             Description = "Google Pixel discount",
                             ProductId = new Guid("1ad04d68-4871-47af-a2bb-7f6864cefc08"),
@@ -71,7 +71,7 @@ namespace Discount.Grpc.Migrations
                         },
                         new
                         {
-                            Id = new Guid("1bb7d6dc-8b47-4ed2-9b9a-d92b615e90e0"),
+                            Id = new Guid("e4116eba-0f9f-42f3-8de2-93af39a760aa"),
                             Amount = 60m,
                             Description = "OnePlus discount",
                             ProductId = new Guid("70098a3c-6917-49b9-910c-8078cd7fdf21"),
@@ -79,7 +79,7 @@ namespace Discount.Grpc.Migrations
                         },
                         new
                         {
-                            Id = new Guid("e6168cf9-13e2-4c9f-bf52-960950369a38"),
+                            Id = new Guid("6a3f64ad-a605-4cb2-85c7-63c9facb1d8d"),
                             Amount = 15m,
                             Description = "Xiami discount",
                             ProductId = new Guid("6967eb61-fb97-4791-a808-7c3c0208cd70"),
