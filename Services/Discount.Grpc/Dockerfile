@@ -1,9 +1,9 @@
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 USER app
 WORKDIR /app
-EXPOSE 8080 8081
+EXPOSE 6002 6062
 
-ENV ASPNETCORE_URLS=https://+:8081;http://+:8080
+ENV ASPNETCORE_URLS=https://+:6062;http://+:6002
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG configuration=Release
@@ -22,4 +22,3 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "Discount.Grpc.dll"]
-# CMD ["tail", "-f", "/dev/null"]

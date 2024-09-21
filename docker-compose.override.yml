@@ -12,7 +12,7 @@ services:
   catalogapi:
     container_name: catalogapi
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENV}
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
       - ASPNETCORE_Kestrel__Certificates__Default__Password=${ASPNETCORE_CERTIFICATES_PASSWORD}
       - ConnectionStrings__Database=host=catalogdb;port=5432;database=catalogdb;username=${POSTGRES_USER};password=${POSTGRES_PASSWORD}
@@ -44,11 +44,12 @@ services:
   basketapi:
     container_name: basketapi
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENV}
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
       - ASPNETCORE_Kestrel__Certificates__Default__Password=${ASPNETCORE_CERTIFICATES_PASSWORD}
       - ConnectionStrings__Database=host=basketdb;port=5432;database=basketdb;username=${POSTGRES_USER};password=${POSTGRES_PASSWORD}
       - ConnectionStrings__Cache=basketcache:6379,password=${REDIS_PASSWORD}
+      - GrpcSettings__DiscountUrl=https://discountgrpc:6062
     restart: always
     ports:
       - 6001:8080
@@ -59,15 +60,12 @@ services:
   discountgrpc:
     container_name: discountgrpc
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENV}
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
       - ASPNETCORE_Kestrel__Certificates__Default__Password=${ASPNETCORE_CERTIFICATES_PASSWORD}
     restart: always
-    expose:
-      - 6002:8080
-      - 6062:8081
     ports:
-      - 6002:8080
-      - 6062:8081
+      - 6002:6002
+      - 6062:6062
     volumes:
       - ~/.aspnet/https/:/https:ro

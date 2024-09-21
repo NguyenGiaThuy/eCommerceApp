@@ -4,9 +4,10 @@ option csharp_namespace = "eCommerceApp.Discount.Grpc";
 
 package discount;
 
-service Discount
+service DiscountProtoService
 {
-    rpc GetDiscount (GetDiscountRequest) returns (GetDiscountResponse);
+    rpc ApplyDiscount (ApplyDiscountRequest) returns (ApplyDiscountResponse);
+    rpc GetDiscounts (GetDiscountsRequest) returns (GetDiscountsResponse);
     rpc CreateDiscount (CreateDiscountRequest) returns (CreateDiscountResponse);
     rpc UpdateDiscount (UpdateDiscountRequest) returns (UpdateDiscountResponse);
     rpc DeleteDiscount (DeleteDiscountRequest) returns (DeleteDiscountResponse);
@@ -14,30 +15,41 @@ service Discount
 
 message CouponModel 
 {
-    string productId = 1;
-    string productName = 2;
-    string description = 3;
-    float amount = 4;
+    string id = 1;
+    string product_id = 2;
+    string product_name = 3;
+    string description = 4;
+    float amount = 5;
 }
 
-message GetDiscountRequest
+message ApplyDiscountRequest
 {
-    string productId = 1;
+    string id = 1;
 }
 
-message GetDiscountResponse
+message ApplyDiscountResponse
 {
     CouponModel coupon = 1;
 }
 
-message CreateDiscountRequest
+message GetDiscountsRequest
 {
+    string product_id = 1;
+}
+
+message GetDiscountsResponse
+{
+    repeated CouponModel coupons = 1;
+}
+
+message CreateDiscountRequest
+{   
     CouponModel coupon = 1;
 }
 
 message CreateDiscountResponse
 {
-    string productId = 1;
+    string id = 1;
 }
 
 message UpdateDiscountRequest
@@ -47,12 +59,12 @@ message UpdateDiscountRequest
 
 message UpdateDiscountResponse
 {
-    string productId = 1;
+    string id = 1;
 }
 
 message DeleteDiscountRequest
 {
-    string productId = 1;
+    string id = 1;
 }
 
 message DeleteDiscountResponse

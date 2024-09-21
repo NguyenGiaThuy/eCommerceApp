@@ -1,5 +1,6 @@
 global using Carter;
 global using FluentValidation;
+global using Grpc.Core;
 global using HealthChecks.UI.Client;
 global using Mapster;
 global using Marten;
@@ -16,3 +17,4 @@ global using eCommerceApp.BuildingBlocks.Behaviours;
 global using eCommerceApp.BuildingBlocks.CQRS;
 global using eCommerceApp.BuildingBlocks.Exceptions;
 global using eCommerceApp.BuildingBlocks.Exceptions.Handlers;
+global using eCommerceApp.Discount.Grpc;

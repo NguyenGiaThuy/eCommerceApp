@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Http.Features;
-
 namespace eCommerceApp.Basket.API.Basket.CreateBasket;
 
 /*
@@ -30,17 +28,33 @@ public record CreateBasketResult(string Username);
 /// Repository object
 /// </summary>
 /// <param name="repository"></param>
-internal class CreateBasketHandler(IBasketRepository repository)
+internal class CreateBasketHandler
+    (IBasketRepository repository, DiscountProtoService.DiscountProtoServiceClient discountClient)
     : ICommandHandler<CreateBasketCommand, CreateBasketResult>
 {
     public async Task<CreateBasketResult> Handle(
         CreateBasketCommand command, CancellationToken cancellationToken)
     {
+        // Apply discounts for all items in cart
+        await ApplyDiscounts(command.Cart, cancellationToken);
+
         // Save cart to database
         var username = await repository.CreateBasket(command.Cart, cancellationToken);
 
         // Return CreateBasketResult result
         return new CreateBasketResult(username);
+    }
+
+    private async Task ApplyDiscounts(ShoppingCart cart, CancellationToken cancellationToken)
+    {
+        foreach (var item in cart.Items)
+        {
+            var discountsResponse = await discountClient.GetDiscountsAsync(new GetDiscountsRequest
+            { ProductId = item.ProductId.ToString() }, cancellationToken: cancellationToken);
+
+            var couponModel = discountsResponse.Coupons.OrderBy(x => x.Amount).FirstOrDefault();
+            if (couponModel != null) item.Coupon = couponModel.Adapt<ShoppingCartCoupon>();
+        }
     }
 }
 

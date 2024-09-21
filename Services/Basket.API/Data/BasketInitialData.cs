@@ -20,33 +20,122 @@ public class BasketInitialData : IInitialData
         var productNames = new[] { "Iphone X", "Samsung S21", "Google Pixel 5", "OnePlus 9", "Xiaomi Mi 11" };
         var colors = new[] { "Red", "Blue", "White", "Black" };
 
-        var shoppingCarts = new List<ShoppingCart>();
-        for (int i = 0; i < shoppingCartsCount; i++)
+        // var shoppingCarts = new List<ShoppingCart>();
+        // for (int i = 0; i < shoppingCartsCount; i++)
+        // {
+        //     var shoppingCart = new ShoppingCart
+        //     {
+        //         Username = usernames[random.Next(usernames.Length)],
+        //         Items = new List<ShoppingCartItem>()
+        //     };
+
+        //     var itemsCount = random.Next(1, productNames.Length);
+        //     for (int j = 0; j < itemsCount; j++)
+        //     {
+        //         var item = new ShoppingCartItem
+        //         {
+        //             ProductId = Guid.NewGuid(),
+        //             ProductName = productNames[random.Next(productNames.Length)],
+        //             Quantity = random.Next(1, 4),
+        //             Color = colors[random.Next(colors.Length)],
+        //             Price = (decimal)Math.Round(random.NextDouble() * (999.99 - 299.99) + 299.99, 2),
+        //             Coupon = new ShoppingCartCoupon()
+        //         };
+
+        //         shoppingCart.Items.Add(item);
+        //     }
+
+        //     shoppingCarts.Add(shoppingCart);
+        // }
+
+        // return shoppingCarts;
+
+        return new List<ShoppingCart>
         {
-            var shoppingCart = new ShoppingCart
+            new ShoppingCart
             {
                 Username = usernames[random.Next(usernames.Length)],
-                Items = new List<ShoppingCartItem>()
-            };
-
-            var itemsCount = random.Next(1, productNames.Length);
-            for (int j = 0; j < itemsCount; j++)
-            {
-                var item = new ShoppingCartItem
+                Items = new List<ShoppingCartItem>
                 {
-                    ProductId = Guid.NewGuid(),
-                    ProductName = productNames[random.Next(productNames.Length)],
-                    Quantity = random.Next(1, 4),
-                    Color = colors[random.Next(colors.Length)],
-                    Price = (decimal)Math.Round(random.NextDouble() * (999.99 - 299.99) + 299.99, 2)
-                };
-
-                shoppingCart.Items.Add(item);
+                    new ShoppingCartItem
+                    {
+                        ProductId = new Guid("16676e61-9c66-4f5d-9ba2-a775b6d326d1"),
+                        ProductName = "Iphone X",
+                        Quantity = random.Next(1, 4),
+                        Color = colors[random.Next(colors.Length)],
+                        Price = (decimal)Math.Round(random.NextDouble() * (999.99 - 299.99) + 299.99, 2),
+                        Coupon = new ShoppingCartCoupon()
+                    },
+                    new ShoppingCartItem
+                    {
+                        ProductId = new Guid("c63d2f83-f353-42e1-a07f-8be599379a32"),
+                        ProductName = "Samsung S21",
+                        Quantity = random.Next(1, 4),
+                        Color = colors[random.Next(colors.Length)],
+                        Price = (decimal)Math.Round(random.NextDouble() * (999.99 - 299.99) + 299.99, 2),
+                        Coupon = new ShoppingCartCoupon()
+                    }
+                }
+            },
+            new ShoppingCart
+            {
+                Username = usernames[random.Next(usernames.Length)],
+                Items = new List<ShoppingCartItem>
+                {
+                    new ShoppingCartItem
+                    {
+                        ProductId = new Guid("1ad04d68-4871-47af-a2bb-7f6864cefc08"),
+                        ProductName = "Google Pixel 5",
+                        Quantity = random.Next(1, 4),
+                        Color = colors[random.Next(colors.Length)],
+                        Price = (decimal)Math.Round(random.NextDouble() * (999.99 - 299.99) + 299.99, 2),
+                        Coupon = new ShoppingCartCoupon()
+                    },
+                    new ShoppingCartItem
+                    {
+                        ProductId = new Guid("70098a3c-6917-49b9-910c-8078cd7fdf21"),
+                        ProductName = "OnePlus 9",
+                        Quantity = random.Next(1, 4),
+                        Color = colors[random.Next(colors.Length)],
+                        Price = (decimal)Math.Round(random.NextDouble() * (999.99 - 299.99) + 299.99, 2),
+                        Coupon = new ShoppingCartCoupon()
+                    }
+                }
+            },
+            new ShoppingCart
+            {
+                Username = usernames[random.Next(usernames.Length)],
+                Items = new List<ShoppingCartItem>
+                {
+                    new ShoppingCartItem
+                    {
+                        ProductId = new Guid("c63d2f83-f353-42e1-a07f-8be599379a32"),
+                        ProductName = "Samsung S21",
+                        Quantity = random.Next(1, 4),
+                        Color = colors[random.Next(colors.Length)],
+                        Price = (decimal)Math.Round(random.NextDouble() * (999.99 - 299.99) + 299.99, 2),
+                        Coupon = new ShoppingCartCoupon()
+                    },
+                    new ShoppingCartItem
+                    {
+                        ProductId = new Guid("70098a3c-6917-49b9-910c-8078cd7fdf21"),
+                        ProductName = "OnePlus 9",
+                        Quantity = random.Next(1, 4),
+                        Color = colors[random.Next(colors.Length)],
+                        Price = (decimal)Math.Round(random.NextDouble() * (999.99 - 299.99) + 299.99, 2),
+                        Coupon = new ShoppingCartCoupon()
+                    },
+                    new ShoppingCartItem
+                    {
+                        ProductId = new Guid("1ad04d68-4871-47af-a2bb-7f6864cefc08"),
+                        ProductName = "Google Pixel 5",
+                        Quantity = random.Next(1, 4),
+                        Color = colors[random.Next(colors.Length)],
+                        Price = (decimal)Math.Round(random.NextDouble() * (999.99 - 299.99) + 299.99, 2),
+                        Coupon = new ShoppingCartCoupon()
+                    }
+                }
             }
-
-            shoppingCarts.Add(shoppingCart);
-        }
-
-        return shoppingCarts;
+        };
     }
 }

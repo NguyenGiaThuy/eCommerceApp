@@ -24,6 +24,7 @@ services:
     depends_on:
       - basketdb
       - basketcache
+      - discountgrpc
 
   discountgrpc:
     build:
