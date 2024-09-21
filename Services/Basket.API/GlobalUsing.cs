@@ -1,6 +1,8 @@
 global using Carter;
 global using FluentValidation;
 global using Grpc.Core;
+global using Grpc.Health.V1;
+global using Grpc.Net.Client;
 global using HealthChecks.UI.Client;
 global using Mapster;
 global using Marten;
@@ -8,6 +10,7 @@ global using Marten.Schema;
 global using MediatR;
 global using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 global using Microsoft.Extensions.Caching.Distributed;
+global using Microsoft.Extensions.Diagnostics.HealthChecks;
 global using System.Text.Json;
 
 global using eCommerceApp.Basket.API.Data;

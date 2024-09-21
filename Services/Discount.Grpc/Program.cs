@@ -13,10 +13,15 @@ builder.Services.AddDbContext<DiscountContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("Database"));
 });
 
+builder.Services
+    .AddGrpcHealthChecks()
+    .AddCheck("discount.grpc.healthchecks", () => HealthCheckResult.Healthy());
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline
 app.MapGrpcService<DiscountService>();
 app.UseMigration();
+app.MapGrpcHealthChecksService();
 
 app.Run();

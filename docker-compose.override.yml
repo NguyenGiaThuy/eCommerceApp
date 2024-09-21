@@ -8,6 +8,11 @@ services:
     restart: always
     volumes:
       - catalog-db:/var/lib/postgresql/data/
+    healthcheck:
+      test: pg_isready -U ${POSTGRES_USER} -d catalogdb
+      interval: 30s
+      timeout: 30s
+      retries: 3
 
   catalogapi:
     container_name: catalogapi
@@ -22,6 +27,11 @@ services:
       - 6060:8081
     volumes:
       - ~/.aspnet/https/:/https:ro
+    healthcheck:
+      test: curl --fail http://localhost:8080/health || exit
+      interval: 30s
+      timeout: 30s
+      retries: 3
 
   basketdb:
     container_name: basketdb
@@ -32,6 +42,11 @@ services:
     restart: always
     volumes:
       - basket-db:/var/lib/postgresql/data/
+    healthcheck:
+      test: pg_isready -U ${POSTGRES_USER} -d basketdb
+      interval: 30s
+      timeout: 30s
+      retries: 3
 
   basketcache:
     container_name: basketcache
@@ -40,6 +55,11 @@ services:
     restart: always
     volumes:
       - basket-cache:/data/
+    healthcheck:
+      test: redis-cli --raw incr ping
+      interval: 30s
+      timeout: 30s
+      retries: 3
 
   basketapi:
     container_name: basketapi
@@ -56,6 +76,11 @@ services:
       - 6061:8081
     volumes:
       - ~/.aspnet/https/:/https:ro
+    healthcheck:
+      test: curl --fail http://localhost:8080/health || exit
+      interval: 30s
+      timeout: 30s
+      retries: 3
 
   discountgrpc:
     container_name: discountgrpc
@@ -69,3 +94,27 @@ services:
       - 6062:6062
     volumes:
       - ~/.aspnet/https/:/https:ro
+    healthcheck:
+      test: grpc_health_probe -addr=localhost:6002
+      interval: 30s
+      timeout: 30s
+      retries: 5
+
+  orderingapi:
+    container_name: orderingapi
+    environment:
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENV}
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=${ASPNETCORE_CERTIFICATES_PASSWORD}
+      - ConnectionStrings__Database=
+    restart: always
+    ports:
+      - 6003:8080
+      - 6063:8081
+    volumes:
+      - ~/.aspnet/https/:/https:ro
+    healthcheck:
+      test: curl --fail http://localhost:8080/health || exit
+      interval: 30s
+      timeout: 30s
+      retries: 3

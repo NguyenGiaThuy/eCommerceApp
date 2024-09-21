@@ -11,18 +11,18 @@ ENV ASPNETCORE_URLS=https://+:8081;http://+:8080
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG configuration=Release
 WORKDIR /src
-COPY ["Services/Basket.API/Basket.API.csproj", "Services/Basket.API/"]
+COPY ["Services/Ordering.API/Ordering.API.csproj", "Services/Ordering.API/"]
 COPY ["BuildingBlocks/BuildingBlocks/BuildingBlocks.csproj", "BuildingBlocks/BuildingBlocks/"]
-RUN dotnet restore "Services/Basket.API/Basket.API.csproj"
+RUN dotnet restore "Services/Ordering.API/Ordering.API.csproj"
 COPY . .
-WORKDIR "/src/Services/Basket.API"
-RUN dotnet build "Basket.API.csproj" -c $configuration -o /app/build
+WORKDIR "/src/Services/Ordering.API"
+RUN dotnet build "Ordering.API.csproj" -c $configuration -o /app/build
 
 FROM build AS publish
 ARG configuration=Release
-RUN dotnet publish "Basket.API.csproj" -c $configuration -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "Ordering.API.csproj" -c $configuration -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "Basket.API.dll"]
+ENTRYPOINT ["dotnet", "Ordering.API.dll"]

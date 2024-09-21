@@ -51,7 +51,7 @@ internal class CreateProductHandler(IDocumentSession session)
             CategoryIds = command.CategoryIds,
             Description = command.Description,
             ImageFile = command.ImageFile,
-            Price = command.Price,
+            Price = command.Price
         };
 
         // Save to database

@@ -8,7 +8,8 @@ services:
       dockerfile: Services/Catalog.API/Dockerfile
     image: catalog-api
     depends_on:
-      - catalogdb
+      catalogdb:
+        condition: service_healthy
 
   basketdb:
     image: postgres
@@ -22,15 +23,24 @@ services:
       dockerfile: Services/Basket.API/Dockerfile
     image: basket-api
     depends_on:
-      - basketdb
-      - basketcache
-      - discountgrpc
+      basketdb:
+        condition: service_healthy
+      basketcache:
+        condition: service_healthy
+      discountgrpc:
+        condition: service_healthy
 
   discountgrpc:
     build:
       context: .
       dockerfile: Services/Discount.Grpc/Dockerfile
     image: discount-grpc
+
+  orderingapi:
+    build:
+      context: .
+      dockerfile: Services/Ordering.API/Dockerfile
+    image: ordering-api
 
 volumes:
   basket-db:

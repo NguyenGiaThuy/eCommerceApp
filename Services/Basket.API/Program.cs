@@ -54,7 +54,31 @@ builder.Services.AddGrpcClient<DiscountProtoService.DiscountProtoServiceClient>(
 
 builder.Services.AddHealthChecks()
                 .AddNpgSql(builder.Configuration.GetConnectionString("Database")!)
-                .AddRedis(builder.Configuration.GetConnectionString("Cache")!);
+                .AddRedis(builder.Configuration.GetConnectionString("Cache")!)
+                .AddAsyncCheck("grpc", async () =>
+                {
+                    var handler = new HttpClientHandler();
+                    if (builder.Environment.IsDevelopment()) handler = new HttpClientHandler
+                    {
+                        ServerCertificateCustomValidationCallback =
+                        HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+                    };
+
+                    var channel = GrpcChannel.ForAddress(builder.Configuration["GrpcSettings:DiscountUrl"]!, new GrpcChannelOptions
+                    {
+                        HttpClient = new HttpClient(handler)
+                    });
+
+                    var client = new Health.HealthClient(channel);
+
+                    var healthResponse = await client.CheckAsync(new HealthCheckRequest());
+
+                    return healthResponse.Status switch
+                    {
+                        HealthCheckResponse.Types.ServingStatus.Serving => HealthCheckResult.Healthy(),
+                        _ => HealthCheckResult.Unhealthy()
+                    };
+                });
 
 builder.Services.AddCarter();
 builder.Services.AddExceptionHandler<CustomExceptionHandler>();
