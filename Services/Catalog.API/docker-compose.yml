@@ -1,6 +1,14 @@
 services:
   catalogdb:
-    image: postgres
-
-volumes:
-  catalog-db:
+    build:
+      context: .
+      dockerfile: Dockerfile.catalogdb
+      args:
+        - BUILD_POSTGRES_DB=catalogdb
+        - BUILD_POSTGRES_USER=${POSTGRES_USER}
+        - BUILD_POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    image: catalog-db:1.0
+    container_name: catalogdb
+    restart: always
+    volumes:
+      - catalog-db:/var/lib/postgresql/data/

@@ -1,9 +1,29 @@
 services:
   basketdb:
-    image: postgres
+    build:
+      context: .
+      dockerfile: Dockerfile.basketdb
+      args:
+        - BUILD_POSTGRES_DB=basketdb
+        - BUILD_POSTGRES_USER=${POSTGRES_USER}
+        - BUILD_POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    image: basket-db:1.0
+    container_name: basketdb
+    restart: always
+    volumes:
+      - basket-db:/var/lib/postgresql/data/
 
   basketcache:
-    image: redis
+    build:
+      context: .
+      dockerfile: Dockerfile.basketcache
+      args:
+        - BUILD_REDIS_PASSWORD=${REDIS_PASSWORD}
+    image: basket-cache:1.0
+    container_name: basketcache
+    restart: always
+    volumes:
+      - basket-cache:/data/
 
 volumes:
   basket-db:

@@ -1,27 +1,84 @@
 services:
   catalogdb:
-    image: postgres
+    build:
+      context: .
+      dockerfile: Services/Catalog.API/Dockerfile.catalogdb
+      args:
+        - BUILD_POSTGRES_DB=catalogdb
+        - BUILD_POSTGRES_USER=${POSTGRES_USER}
+        - BUILD_POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    image: catalog-db:1.0
+    container_name: catalogdb
+    restart: always
+    volumes:
+      - catalog-db:/var/lib/postgresql/data/
 
   catalogapi:
     build:
       context: .
-      dockerfile: Services/Catalog.API/Dockerfile
-    image: catalog-api
+      dockerfile: Services/Catalog.API/Dockerfile.catalogapi
+      args:
+        - BUILD_ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENV}
+        - BUILD_ASPNETCORE_CERTIFICATES_PATH=/https/aspnetapp.pfx
+        - BUILD_ASPNETCORE_CERTIFICATES_PASSWORD=${ASPNETCORE_CERTIFICATES_PASSWORD}
+        - BUILD_ASPNETCORE_DB_CONNECTION_STRING=host=catalogdb;port=5432;database=catalogdb;username=${POSTGRES_USER};password=${POSTGRES_PASSWORD}
+    image: catalog-api:1.0
+    container_name: catalogapi
+    restart: always
+    ports:
+      - 6000:8080
+      - 6060:8081
+    volumes:
+      - ~/.aspnet/https/:/https:ro
     depends_on:
       catalogdb:
         condition: service_healthy
 
   basketdb:
-    image: postgres
+    build:
+      context: .
+      dockerfile: Services/Basket.API/Dockerfile.basketdb
+      args:
+        - BUILD_POSTGRES_DB=basketdb
+        - BUILD_POSTGRES_USER=${POSTGRES_USER}
+        - BUILD_POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    image: basket-db:1.0
+    container_name: basketdb
+    restart: always
+    volumes:
+      - basket-db:/var/lib/postgresql/data/
 
   basketcache:
-    image: redis
+    build:
+      context: .
+      dockerfile: Services/Basket.API/Dockerfile.basketcache
+      args:
+        - BUILD_REDIS_PASSWORD=${REDIS_PASSWORD}
+    image: basket-cache:1.0
+    container_name: basketcache
+    restart: always
+    volumes:
+      - basket-cache:/data/
 
   basketapi:
     build:
       context: .
-      dockerfile: Services/Basket.API/Dockerfile
-    image: basket-api
+      dockerfile: Services/Basket.API/Dockerfile.basketapi
+      args:
+        - BUILD_ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENV}
+        - BUILD_ASPNETCORE_CERTIFICATES_PATH=/https/aspnetapp.pfx
+        - BUILD_ASPNETCORE_CERTIFICATES_PASSWORD=${ASPNETCORE_CERTIFICATES_PASSWORD}
+        - BUILD_ASPNETCORE_DB_CONNECTION_STRING=host=basketdb;port=5432;database=basketdb;username=${POSTGRES_USER};password=${POSTGRES_PASSWORD}
+        - BUILD_ASPNETCORE_CACHE_CONNECTION_STRING=basketcache:6379,password=${REDIS_PASSWORD}
+        - BUILD_ASPNETCORE_GRPC_DISCOUNT_SERVICE=https://discountgrpc:6062
+    image: basket-api:1.0
+    container_name: basketapi
+    restart: always
+    ports:
+      - 6001:8080
+      - 6061:8081
+    volumes:
+      - ~/.aspnet/https/:/https:ro
     depends_on:
       basketdb:
         condition: service_healthy
@@ -33,14 +90,36 @@ services:
   discountgrpc:
     build:
       context: .
-      dockerfile: Services/Discount.Grpc/Dockerfile
-    image: discount-grpc
+      dockerfile: Services/Discount.Grpc/Dockerfile.discountgrpc
+      args:
+        - BUILD_ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENV}
+        - BUILD_ASPNETCORE_CERTIFICATES_PATH=/https/aspnetapp.pfx
+        - BUILD_ASPNETCORE_CERTIFICATES_PASSWORD=${ASPNETCORE_CERTIFICATES_PASSWORD}
+    image: discount-grpc:1.0
+    container_name: discountgrpc
+    restart: always
+    ports:
+      - 6002:6002
+      - 6062:6062
+    volumes:
+      - ~/.aspnet/https/:/https:ro
 
   orderingapi:
     build:
       context: .
-      dockerfile: Services/Ordering.API/Dockerfile
-    image: ordering-api
+      dockerfile: Services/Ordering.API/Dockerfile.orderingapi
+      args:
+        - BUILD_ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENV}
+        - BUILD_ASPNETCORE_CERTIFICATES_PATH=/https/aspnetapp.pfx
+        - BUILD_ASPNETCORE_CERTIFICATES_PASSWORD=${ASPNETCORE_CERTIFICATES_PASSWORD}
+    image: ordering-api:1.0
+    container_name: orderingapi
+    restart: always
+    ports:
+      - 6003:8080
+      - 6063:8081
+    volumes:
+      - ~/.aspnet/https/:/https:ro
 
 volumes:
   basket-db:

@@ -11,6 +11,10 @@ WORKDIR /app
 EXPOSE 6002 6062
 ENV ASPNETCORE_URLS=https://+:6062;http://+:6002
 
+ARG BUILD_ASPNETCORE_ENVIRONMENT
+ARG BUILD_ASPNETCORE_CERTIFICATES_PATH
+ARG BUILD_ASPNETCORE_CERTIFICATES_PASSWORD
+
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG configuration=Release
 WORKDIR /src
@@ -27,4 +31,10 @@ RUN dotnet publish "Discount.Grpc.csproj" -c $configuration -o /app/publish /p:U
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+
+ENV ASPNETCORE_ENVIRONMENT=${BUILD_ASPNETCORE_ENVIRONMENT}
+ENV ASPNETCORE_Kestrel__Certificates__Default__Path=${BUILD_ASPNETCORE_CERTIFICATES_PATH}
+ENV ASPNETCORE_Kestrel__Certificates__Default__Password=${BUILD_ASPNETCORE_CERTIFICATES_PASSWORD}
+
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD grpc_health_probe -addr=localhost:6002 || exit 1
 ENTRYPOINT ["dotnet", "Discount.Grpc.dll"]
