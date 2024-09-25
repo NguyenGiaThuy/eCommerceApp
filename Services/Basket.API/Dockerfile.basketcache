@@ -1,7 +1,3 @@
 FROM redis:7
 
-ARG BUILD_REDIS_PASSWORD
-
-ENV REDIS_ARGS="--requirepass ${BUILD_REDIS_PASSWORD}"
-
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD redis-cli --raw incr ping || exit 1

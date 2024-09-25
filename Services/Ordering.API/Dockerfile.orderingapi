@@ -1,16 +1,12 @@
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 
 # Install curl in the base image to use healthcheck
-RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y curl && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 USER app
 WORKDIR /app
 EXPOSE 8080 8081
 ENV ASPNETCORE_URLS=https://+:8081;http://+:8080
-
-ARG BUILD_ASPNETCORE_ENVIRONMENT
-ARG BUILD_ASPNETCORE_CERTIFICATES_PATH
-ARG BUILD_ASPNETCORE_CERTIFICATES_PASSWORD
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG configuration=Release
@@ -29,10 +25,6 @@ RUN dotnet publish "Ordering.API.csproj" -c $configuration -o /app/publish /p:Us
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-
-ENV ASPNETCORE_ENVIRONMENT=${BUILD_ASPNETCORE_ENVIRONMENT}
-ENV ASPNETCORE_Kestrel__Certificates__Default__Path=${BUILD_ASPNETCORE_CERTIFICATES_PATH}
-ENV ASPNETCORE_Kestrel__Certificates__Default__Password=${BUILD_ASPNETCORE_CERTIFICATES_PASSWORD}
 
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD curl --fail http://localhost:8080/health || exit 1
 ENTRYPOINT ["dotnet", "Ordering.API.dll"]

@@ -3,12 +3,12 @@ services:
     build:
       context: .
       dockerfile: Services/Catalog.API/Dockerfile.catalogdb
-      args:
-        - BUILD_POSTGRES_DB=catalogdb
-        - BUILD_POSTGRES_USER=${POSTGRES_USER}
-        - BUILD_POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     image: catalog-db:1.0
     container_name: catalogdb
+    environment:
+      - POSTGRES_DB=catalogdb
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     restart: always
     volumes:
       - catalog-db:/var/lib/postgresql/data/
@@ -17,13 +17,13 @@ services:
     build:
       context: .
       dockerfile: Services/Catalog.API/Dockerfile.catalogapi
-      args:
-        - BUILD_ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENV}
-        - BUILD_ASPNETCORE_CERTIFICATES_PATH=/https/aspnetapp.pfx
-        - BUILD_ASPNETCORE_CERTIFICATES_PASSWORD=${ASPNETCORE_CERTIFICATES_PASSWORD}
-        - BUILD_ASPNETCORE_DB_CONNECTION_STRING=host=catalogdb;port=5432;database=catalogdb;username=${POSTGRES_USER};password=${POSTGRES_PASSWORD}
     image: catalog-api:1.0
     container_name: catalogapi
+    environment:
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENV}
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=${ASPNETCORE_CERTIFICATES_PASSWORD}
+      - ConnectionStrings__Database=host=catalogdb;port=5432;database=catalogdb;username=${POSTGRES_USER};password=${POSTGRES_PASSWORD}
     restart: always
     ports:
       - 6000:8080
@@ -38,12 +38,12 @@ services:
     build:
       context: .
       dockerfile: Services/Basket.API/Dockerfile.basketdb
-      args:
-        - BUILD_POSTGRES_DB=basketdb
-        - BUILD_POSTGRES_USER=${POSTGRES_USER}
-        - BUILD_POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     image: basket-db:1.0
     container_name: basketdb
+    environment:
+      - POSTGRES_DB=basketdb
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     restart: always
     volumes:
       - basket-db:/var/lib/postgresql/data/
@@ -52,10 +52,10 @@ services:
     build:
       context: .
       dockerfile: Services/Basket.API/Dockerfile.basketcache
-      args:
-        - BUILD_REDIS_PASSWORD=${REDIS_PASSWORD}
     image: basket-cache:1.0
     container_name: basketcache
+    environment:
+      - REDIS_ARGS=--requirepass ${REDIS_PASSWORD}
     restart: always
     volumes:
       - basket-cache:/data/
@@ -64,15 +64,15 @@ services:
     build:
       context: .
       dockerfile: Services/Basket.API/Dockerfile.basketapi
-      args:
-        - BUILD_ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENV}
-        - BUILD_ASPNETCORE_CERTIFICATES_PATH=/https/aspnetapp.pfx
-        - BUILD_ASPNETCORE_CERTIFICATES_PASSWORD=${ASPNETCORE_CERTIFICATES_PASSWORD}
-        - BUILD_ASPNETCORE_DB_CONNECTION_STRING=host=basketdb;port=5432;database=basketdb;username=${POSTGRES_USER};password=${POSTGRES_PASSWORD}
-        - BUILD_ASPNETCORE_CACHE_CONNECTION_STRING=basketcache:6379,password=${REDIS_PASSWORD}
-        - BUILD_ASPNETCORE_GRPC_DISCOUNT_SERVICE=https://discountgrpc:6062
     image: basket-api:1.0
     container_name: basketapi
+    environment:
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENV}
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=${ASPNETCORE_CERTIFICATES_PASSWORD}
+      - ConnectionStrings__Database=host=basketdb;port=5432;database=basketdb;username=${POSTGRES_USER};password=${POSTGRES_PASSWORD}
+      - ConnectionStrings__Cache=basketcache:6379,password=${REDIS_PASSWORD}
+      - GrpcSettings__DiscountUrl=https://discountgrpc:6062
     restart: always
     ports:
       - 6001:8080
@@ -91,12 +91,12 @@ services:
     build:
       context: .
       dockerfile: Services/Discount.Grpc/Dockerfile.discountgrpc
-      args:
-        - BUILD_ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENV}
-        - BUILD_ASPNETCORE_CERTIFICATES_PATH=/https/aspnetapp.pfx
-        - BUILD_ASPNETCORE_CERTIFICATES_PASSWORD=${ASPNETCORE_CERTIFICATES_PASSWORD}
     image: discount-grpc:1.0
     container_name: discountgrpc
+    environment:
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENV}
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=${ASPNETCORE_CERTIFICATES_PASSWORD}
     restart: always
     ports:
       - 6002:6002
@@ -108,12 +108,12 @@ services:
     build:
       context: .
       dockerfile: Services/Ordering.API/Dockerfile.orderingapi
-      args:
-        - BUILD_ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENV}
-        - BUILD_ASPNETCORE_CERTIFICATES_PATH=/https/aspnetapp.pfx
-        - BUILD_ASPNETCORE_CERTIFICATES_PASSWORD=${ASPNETCORE_CERTIFICATES_PASSWORD}
     image: ordering-api:1.0
     container_name: orderingapi
+    environment:
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENV}
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=${ASPNETCORE_CERTIFICATES_PASSWORD}
     restart: always
     ports:
       - 6003:8080
