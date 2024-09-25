@@ -7,9 +7,6 @@ RUN apt-get update && \
     chmod +x /usr/local/bin/grpc_health_probe && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
-chmod +x /usr/local/bin/grpc_health_probe && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
 
 USER app
 WORKDIR /app
