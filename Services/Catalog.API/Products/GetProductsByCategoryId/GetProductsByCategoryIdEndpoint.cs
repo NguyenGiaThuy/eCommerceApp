@@ -1,24 +1,13 @@
 namespace eCommerceApp.Catalog.API.Products.GetProductsByCategoryId;
 
-/*
-Internal architecture: Vertical slice
-    1. UI layer (or Presentation layer or API layer) - current
-    2. Application layer
-    3. Domain layer
-    4. Infrastructure layer
-Design pattern/Principle: CQRS handler
-    1. Command/query object
-    2. Result object
-    3. Repository object
-*/
-
 /// <summary>
 /// Query object
 /// </summary>
 /// <param name="Id"></param>
 /// <param name="PageNumber"></param>
 /// <param name="PageSize"></param>
-public record GetProductsByCategoryIdRequest(Guid Id, int? PageNumber = 1, int? PageSize = 10);
+public record GetProductsByCategoryIdRequest
+    (Guid Id, int? PageNumber = 1, int? PageSize = 10);
 
 /// <summary>
 /// Result object

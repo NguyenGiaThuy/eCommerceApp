@@ -39,12 +39,14 @@ namespace Discount.Grpc.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ProductId");
+
                     b.ToTable("Coupons");
 
                     b.HasData(
                         new
                         {
-                            Id = new Guid("72fa5226-3e79-4cf8-b426-8f3f6eef2dff"),
+                            Id = new Guid("206bb5a8-a2a9-4e6b-8a12-74737be21aad"),
                             Amount = 50m,
                             Description = "Iphone discount",
                             ProductId = new Guid("16676e61-9c66-4f5d-9ba2-a775b6d326d1"),
@@ -52,7 +54,7 @@ namespace Discount.Grpc.Migrations
                         },
                         new
                         {
-                            Id = new Guid("7a4e79db-591f-4f28-9173-e6e4b2c2843e"),
+                            Id = new Guid("9d86d345-6c10-4483-9368-428f3ce5667d"),
                             Amount = 100m,
                             Description = "Samsung discount",
                             ProductId = new Guid("c63d2f83-f353-42e1-a07f-8be599379a32"),
@@ -60,7 +62,7 @@ namespace Discount.Grpc.Migrations
                         },
                         new
                         {
-                            Id = new Guid("738efc5b-e91d-49c0-bbc0-828b2e972709"),
+                            Id = new Guid("97a5ccb3-714e-4942-bd51-6e0a0ceac7ea"),
                             Amount = 70m,
                             Description = "Google Pixel discount",
                             ProductId = new Guid("1ad04d68-4871-47af-a2bb-7f6864cefc08"),
@@ -68,7 +70,7 @@ namespace Discount.Grpc.Migrations
                         },
                         new
                         {
-                            Id = new Guid("d179434d-0d55-47d4-9bc0-813ae707ddba"),
+                            Id = new Guid("9c9d97c3-7135-41ec-8acf-6ba72d0636e2"),
                             Amount = 60m,
                             Description = "OnePlus discount",
                             ProductId = new Guid("70098a3c-6917-49b9-910c-8078cd7fdf21"),
@@ -76,7 +78,7 @@ namespace Discount.Grpc.Migrations
                         },
                         new
                         {
-                            Id = new Guid("31c0e677-325f-4611-ae0f-fc22828a542b"),
+                            Id = new Guid("964c1485-e5fd-45b3-8fe8-15f1a8d7149a"),
                             Amount = 15m,
                             Description = "Xiami discount",
                             ProductId = new Guid("6967eb61-fb97-4791-a808-7c3c0208cd70"),

@@ -1,17 +1,5 @@
 namespace eCommerceApp.Basket.API.Basket.CreateBasket;
 
-/*
-Internal architecture: Vertical slice
-    1. UI layer (or Presentation layer or API layer)
-    2. Application layer - current
-    3. Domain layer
-    4. Infrastructure layer
-Design pattern/Principle: CQRS handler
-    1. Command/query object
-    2. Result object
-    3. Repository object
-*/
-
 /// <summary>
 /// Command object
 /// </summary>

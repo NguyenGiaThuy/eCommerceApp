@@ -4,7 +4,9 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 RUN apt-get update && \
     apt-get install -y wget && \
     wget https://github.com/grpc-ecosystem/grpc-health-probe/releases/latest/download/grpc_health_probe-linux-amd64 -O /usr/local/bin/grpc_health_probe && \
-    chmod +x /usr/local/bin/grpc_health_probe
+    chmod +x /usr/local/bin/grpc_health_probe && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 USER app
 WORKDIR /app
@@ -36,5 +38,5 @@ ENV ASPNETCORE_ENVIRONMENT=${BUILD_ASPNETCORE_ENVIRONMENT}
 ENV ASPNETCORE_Kestrel__Certificates__Default__Path=${BUILD_ASPNETCORE_CERTIFICATES_PATH}
 ENV ASPNETCORE_Kestrel__Certificates__Default__Password=${BUILD_ASPNETCORE_CERTIFICATES_PASSWORD}
 
-HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD grpc_health_probe -addr=localhost:6002 || exit 1
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD grpc_health_probe -addr=:6002 || exit 1
 ENTRYPOINT ["dotnet", "Discount.Grpc.dll"]

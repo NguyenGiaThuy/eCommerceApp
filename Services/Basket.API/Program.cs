@@ -1,14 +1,15 @@
 var builder = WebApplication.CreateBuilder(args);
 
-// Configuration
+/* Configuration */
 var environment = builder.Environment.EnvironmentName;
 builder.Configuration
     .AddJsonFile($"appsettings.{environment}.json", optional: true, reloadOnChange: true)
     .AddEnvironmentVariables();
 
-// Add services to container
+/* Add services to container */
 var assembly = typeof(Program).Assembly;
 
+// Mediator pipeline for CQRS
 builder.Services.AddMediatR(config =>
 {
     // configurate to add all associated handlers to container
@@ -21,6 +22,7 @@ builder.Services.AddMediatR(config =>
     config.AddOpenBehavior(typeof(LoggingBehaviour<,>));
 });
 
+// Oject-document mapper (ODM)
 builder.Services.AddMarten(options =>
 {
     options.Connection(builder.Configuration.GetConnectionString("Database")!);
@@ -30,11 +32,13 @@ builder.Services.AddMarten(options =>
 if (builder.Environment.IsDevelopment())
     builder.Services.InitializeMartenWith<BasketInitialData>();
 
+// Redis cache service
 builder.Services.AddStackExchangeRedisCache(options =>
 {
     options.Configuration = builder.Configuration.GetConnectionString("Cache");
 });
 
+// gRPC client service
 builder.Services.AddGrpcClient<DiscountProtoService.DiscountProtoServiceClient>(options =>
 {
     options.Address = new Uri(builder.Configuration["GrpcSettings:DiscountUrl"]!);
@@ -42,7 +46,6 @@ builder.Services.AddGrpcClient<DiscountProtoService.DiscountProtoServiceClient>(
 .ConfigurePrimaryHttpMessageHandler(() =>
 {
     var handler = new HttpClientHandler();
-
     if (builder.Environment.IsDevelopment()) handler = new HttpClientHandler
     {
         ServerCertificateCustomValidationCallback =
@@ -52,43 +55,50 @@ builder.Services.AddGrpcClient<DiscountProtoService.DiscountProtoServiceClient>(
     return handler;
 });
 
+// Healthchecks service
 builder.Services.AddHealthChecks()
-                .AddNpgSql(builder.Configuration.GetConnectionString("Database")!)
-                .AddRedis(builder.Configuration.GetConnectionString("Cache")!)
-                .AddAsyncCheck("grpc", async () =>
-                {
-                    var handler = new HttpClientHandler();
-                    if (builder.Environment.IsDevelopment()) handler = new HttpClientHandler
-                    {
-                        ServerCertificateCustomValidationCallback =
-                        HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
-                    };
+.AddAsyncCheck("grpc", async () =>
+{
+    var handler = new HttpClientHandler();
+    if (builder.Environment.IsDevelopment()) handler = new HttpClientHandler
+    {
+        ServerCertificateCustomValidationCallback =
+        HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+    };
 
-                    var channel = GrpcChannel.ForAddress(builder.Configuration["GrpcSettings:DiscountUrl"]!, new GrpcChannelOptions
-                    {
-                        HttpClient = new HttpClient(handler)
-                    });
+    var channel = GrpcChannel.ForAddress(builder.Configuration["GrpcSettings:DiscountUrl"]!, new GrpcChannelOptions
+    {
+        HttpClient = new HttpClient(handler)
+    });
 
-                    var client = new Health.HealthClient(channel);
+    var client = new Health.HealthClient(channel);
 
-                    var healthResponse = await client.CheckAsync(new HealthCheckRequest());
+    var healthResponse = await client.CheckAsync(new HealthCheckRequest());
 
-                    return healthResponse.Status switch
-                    {
-                        HealthCheckResponse.Types.ServingStatus.Serving => HealthCheckResult.Healthy(),
-                        _ => HealthCheckResult.Unhealthy()
-                    };
-                });
+    return healthResponse.Status switch
+    {
+        HealthCheckResponse.Types.ServingStatus.Serving => HealthCheckResult.Healthy(),
+        _ => HealthCheckResult.Unhealthy()
+    };
+})
+.AddNpgSql(builder.Configuration.GetConnectionString("Database")!)
+.AddRedis(builder.Configuration.GetConnectionString("Cache")!);
 
+// Extension for minimal API
 builder.Services.AddCarter();
+
+// Cross-cutting service
 builder.Services.AddExceptionHandler<CustomExceptionHandler>();
+
+// Message broker service
+builder.Services.AddMessageBroker(builder.Configuration);
 builder.Services.AddValidatorsFromAssembly(assembly);
 builder.Services.AddScoped<IBasketRepository, BasketRepository>();
 builder.Services.Decorate<IBasketRepository, CacheBasketRepository>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline
+/* Configure the HTTP request pipeline */
 app.MapCarter();
 app.UseExceptionHandler(options => { });
 app.UseHealthChecks("/health", new HealthCheckOptions()

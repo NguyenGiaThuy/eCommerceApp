@@ -29,7 +29,7 @@ services:
       - 6000:8080
       - 6060:8081
     volumes:
-      - ~/.aspnet/https/:/https:ro
+      - ~/.aspnet/https/aspnetapp.pfx:/https/aspnetapp.pfx:ro
     depends_on:
       catalogdb:
         condition: service_healthy
@@ -78,7 +78,7 @@ services:
       - 6001:8080
       - 6061:8081
     volumes:
-      - ~/.aspnet/https/:/https:ro
+      - ~/.aspnet/https/aspnetapp.pfx:/https/aspnetapp.pfx:ro
     depends_on:
       basketdb:
         condition: service_healthy
@@ -102,7 +102,7 @@ services:
       - 6002:6002
       - 6062:6062
     volumes:
-      - ~/.aspnet/https/:/https:ro
+      - ~/.aspnet/https/aspnetapp.pfx:/https/aspnetapp.pfx:ro
 
   orderingapi:
     build:
@@ -119,7 +119,7 @@ services:
       - 6003:8080
       - 6063:8081
     volumes:
-      - ~/.aspnet/https/:/https:ro
+      - ~/.aspnet/https/aspnetapp.pfx:/https/aspnetapp.pfx:ro
 
 volumes:
   basket-db:

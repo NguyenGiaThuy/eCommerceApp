@@ -1,11 +1,18 @@
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to container
+/* Configuration */
+var environment = builder.Environment.EnvironmentName;
+builder.Configuration
+    .AddJsonFile($"appsettings.{environment}.json", optional: true, reloadOnChange: true)
+    .AddEnvironmentVariables();
+
+/* Add services to container */
+// Healthchecks service
 builder.Services.AddHealthChecks();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline
+/* Configure the HTTP request pipeline */
 app.UseHealthChecks("/health", new HealthCheckOptions()
 {
     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse

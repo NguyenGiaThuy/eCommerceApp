@@ -11,6 +11,7 @@ public class DiscountContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Coupon>().HasData(GetPreconfiguredData());
+        modelBuilder.Entity<Coupon>().HasIndex(x => x.ProductId);
     }
 
     private static IEnumerable<Coupon> GetPreconfiguredData()

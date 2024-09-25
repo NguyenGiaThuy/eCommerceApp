@@ -4,7 +4,8 @@ public class DiscountService
     (DiscountContext dbContext, ILogger<DiscountService> logger)
     : DiscountProtoService.DiscountProtoServiceBase
 {
-    public override async Task<ApplyDiscountResponse> ApplyDiscount(ApplyDiscountRequest request, ServerCallContext context)
+    public override async Task<ApplyDiscountResponse> ApplyDiscount
+        (ApplyDiscountRequest request, ServerCallContext context)
     {
         var coupon = await dbContext.Coupons.FirstOrDefaultAsync(x => x.Id == new Guid(request.Id));
         if (coupon == null) return new ApplyDiscountResponse
@@ -24,7 +25,8 @@ public class DiscountService
         return new ApplyDiscountResponse { Coupon = coupon.Adapt<CouponModel>() };
     }
 
-    public override async Task<GetDiscountsResponse> GetDiscounts(GetDiscountsRequest request, ServerCallContext context)
+    public override async Task<GetDiscountsResponse> GetDiscounts
+        (GetDiscountsRequest request, ServerCallContext context)
     {
         var coupons = await dbContext.Coupons
             .Where(x => x.ProductId == new Guid(request.ProductId)).ToListAsync();
@@ -38,7 +40,8 @@ public class DiscountService
         return response;
     }
 
-    public override async Task<CreateDiscountResponse> CreateDiscount(CreateDiscountRequest request, ServerCallContext context)
+    public override async Task<CreateDiscountResponse> CreateDiscount
+        (CreateDiscountRequest request, ServerCallContext context)
     {
         request.Coupon.Id = Guid.NewGuid().ToString();
         var coupon = request.Coupon.Adapt<Coupon>();
@@ -53,7 +56,8 @@ public class DiscountService
         return new CreateDiscountResponse { Id = request.Coupon.Id };
     }
 
-    public override async Task<UpdateDiscountResponse> UpdateDiscount(UpdateDiscountRequest request, ServerCallContext context)
+    public override async Task<UpdateDiscountResponse> UpdateDiscount
+        (UpdateDiscountRequest request, ServerCallContext context)
     {
         var coupon = request.Coupon.Adapt<Coupon>();
         if (coupon == null)
@@ -67,7 +71,8 @@ public class DiscountService
         return new UpdateDiscountResponse { Id = request.Coupon.Id };
     }
 
-    public override async Task<DeleteDiscountResponse> DeleteDiscount(DeleteDiscountRequest request, ServerCallContext context)
+    public override async Task<DeleteDiscountResponse> DeleteDiscount
+        (DeleteDiscountRequest request, ServerCallContext context)
     {
         var coupon = await dbContext.Coupons.FirstOrDefaultAsync(x => x.Id == new Guid(request.Id));
         if (coupon == null)
