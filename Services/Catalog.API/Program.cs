@@ -34,8 +34,9 @@ if (builder.Environment.IsDevelopment())
 // Extension for minimal API
 builder.Services.AddCarter();
 
-// Cross-cutting service
+// Cross-cutting services (ExceptionHandler and Validators)
 builder.Services.AddExceptionHandler<CustomExceptionHandler>();
+builder.Services.AddValidatorsFromAssembly(assembly);
 
 // Healthchecks service
 builder.Services.AddHealthChecks()

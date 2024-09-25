@@ -7,7 +7,9 @@ public class DiscountService
     public override async Task<ApplyDiscountResponse> ApplyDiscount
         (ApplyDiscountRequest request, ServerCallContext context)
     {
-        var coupon = await dbContext.Coupons.FirstOrDefaultAsync(x => x.Id == new Guid(request.Id));
+        var coupon = await dbContext.Coupons
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == new Guid(request.Id));
         if (coupon == null) return new ApplyDiscountResponse
         {
             Coupon = new CouponModel
@@ -29,7 +31,9 @@ public class DiscountService
         (GetDiscountsRequest request, ServerCallContext context)
     {
         var coupons = await dbContext.Coupons
-            .Where(x => x.ProductId == new Guid(request.ProductId)).ToListAsync();
+            .AsNoTracking()
+            .Where(x => x.ProductId == new Guid(request.ProductId))
+            .ToListAsync();
 
         logger.LogInformation($"All discounts are retrieved for ProductId={request.ProductId}");
 
@@ -74,7 +78,9 @@ public class DiscountService
     public override async Task<DeleteDiscountResponse> DeleteDiscount
         (DeleteDiscountRequest request, ServerCallContext context)
     {
-        var coupon = await dbContext.Coupons.FirstOrDefaultAsync(x => x.Id == new Guid(request.Id));
+        var coupon = await dbContext.Coupons
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == new Guid(request.Id));
         if (coupon == null)
             throw new RpcException(new Status(StatusCode.NotFound, $"Discount for Id={request.Id} not found"));
 

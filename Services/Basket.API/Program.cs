@@ -87,12 +87,14 @@ builder.Services.AddHealthChecks()
 // Extension for minimal API
 builder.Services.AddCarter();
 
-// Cross-cutting service
+// Cross-cutting services (ExceptionHandler and Validators)
 builder.Services.AddExceptionHandler<CustomExceptionHandler>();
+builder.Services.AddValidatorsFromAssembly(assembly);
 
 // Message broker service
 builder.Services.AddMessageBroker(builder.Configuration);
-builder.Services.AddValidatorsFromAssembly(assembly);
+
+// Repository service
 builder.Services.AddScoped<IBasketRepository, BasketRepository>();
 builder.Services.Decorate<IBasketRepository, CacheBasketRepository>();
 
